@@ -84,7 +84,7 @@ Cliquez sur "Faire un Paiement" pour commencer, nous ferons ensuite en backgroun
 NB: _Pour cet exemple nous avons utilisé jquery et le code précédent se fait à l'intérieur d'une balise `<script></script>`_
 
 
-## Etape 3 : Ecouter les evenements qui se produisent lors de notre Observer
+## Etape 3 : Ecouter les evenements qui se produisent lors de notre transaction
 
 Quand le client se trouve sur l'interface de paiement AdjeminPay, Vous avez la possibilité de suivre l'état d'avancement de celui-ci par le biais des evènements.
 Quelques evenements qui se produisent :
