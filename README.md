@@ -17,7 +17,7 @@ AdjeminPay Seamless Integration a été testé et fonctionne sur :
 * jQuery Mobile -->
 L'intégration de ce SDK se fait en trois étapes :
 
-## Etape 1 : Préparer la page de notification
+## Etape 1 : Page de notification
 
 Pour ceux qui possèdent des services qui ne neccessitent pas un traitement des notifications de paiement de AdjeminPay, vous pouvez passer directement à l'etape 2, par exemple les services de don.
 
@@ -31,11 +31,11 @@ Script index.php dans <http://mondomaine.com/notify/> (le script doit se trouver
 ?>
 ```
 
-## Etape 2 : Préparation du formulaire de paiement
+## Etape 2 : Formulaire de paiement
 
 Avant de commencer cette etape, il faut lier le seamless SDK à votre page :
 
-* `https://www.adjeminpay.com/cdn/seamless_sdk/latest/adjeminpay.prod.min.js`    : si vous êtes en production
+* `https://www.adjeminpay.com/release/seamless/latest/adjeminpay.prod.min.js`    : si vous êtes en production
 
 Cela se fait dans la balise head de votre page web
 
@@ -45,13 +45,13 @@ Exemple (en PROD) :
    <head>
        ...
        <script charset="utf-8"
-               src="https://www.adjeminpay.com/cdn/seamless_sdk/latest/adjeminpay.prod.min.js"
+               src="https://www.adjeminpay.com/release/seamless/latest/adjeminpay.prod.min.js"
                type="text/javascript">
        </script>
    </head>
 ```
 
-### Creation du formulaire AdjeminPay
+### Formulaire AdjeminPay
 
 Le formulaire de paiement AdjeminPay est constitué de :
 
@@ -63,7 +63,7 @@ Le formulaire de paiement AdjeminPay est constitué de :
 
 Vous pouvez ajouter en option ces deux elements :
 
-* `cel_phone_num`      : Numéro de téléphone sur lequel l'utilisateur effectuera le paiement
+* `phone_num`      : Numéro de téléphone sur lequel l'utilisateur effectuera le paiement
 * `adp_phone_prefixe`    : Code Pays du numéro de téléphone (exemple 225)
 
 Exemple :
@@ -137,32 +137,30 @@ Exemple (suite du fichier payment.js):
    });
    AdjeminPay.on('signatureCreated', function () {})
    AdjeminPay.on('paymentSuccessfull', function (paymentInfo) {
-        if(typeof paymentInfo.lastTime != 'undefined'){
-            result_div.innerHTML = '';
-            if(paymentInfo.adp_result == '00'){
+
+            if(paymentInfo.adp_result == 'SUCCESS'){
                 result_div.innerHTML = 'Votre paiement a été validé avec succès : <br> Montant payé :'+paymentInfo.adp_amount+'<br>';
             }else{
                 result_div.innerHTML = 'Une erreur est survenue :'+paymentInfo.adp_error_message;
             }
-        }
    });
 </script>
 ```
 
-## Compatibilité Navigateurs Web
+<!-- ## Compatibilité Navigateurs Web
 
 AdjeminPay Seamless Integration a été testé et fonctionne sur tous les navigateurs modernes y compris :
 
 * Chrome
-<!-- * Safari -->
+* Safari
 * Firefox
 * Opera
-* Internet Explorer 8+.
+* Internet Explorer 8+. -->
 
-## Votre Api Key et Site ID
+<!-- ## Votre Api Key et Site ID -->
 
-Ces informations sont disponibles dans votre BackOffice AdjeminPay.
+<!-- Ces informations sont disponibles dans votre BackOffice AdjeminPay. -->
 
-## Exemple Intégration
+<!-- ## Exemple Intégration -->
 
-Vous trouverez un exemple d'intégration complet dans le dossier exemple/html/
+<!-- Vous trouverez un exemple d'intégration complet dans le dossier exemple/html/ -->
