@@ -3,75 +3,49 @@
 
 ## adjeminpay-javascript-sdk
 
-Seamless javascript integration of e-payment for websites with AdjeminPay
-AdjeminPay Seamless Integration permet d'intégrer facilement AdjeminPay de façon transparente à son service en ligne, c'est à dire que le client effectue le paiement sans quitter le site
+AdjeminPay Seamless Integration permet d'intégrer les services AdjeminPay rapidement à sa platforme, afin que le client puisse effectuer un paiement sans quitter le site
 du marchand.
 
-<!-- ## Compatibilité Application Hybride
-
-AdjeminPay Seamless Integration a été testé et fonctionne sur :
-
-* Cordova
-* phoneGap
-* Ionic
-* jQuery Mobile -->
 L'intégration de ce SDK se fait en trois étapes :
 
 ## Etape 1 : Page de notification
 
-Pour ceux qui possèdent des services qui ne neccessitent pas un traitement des notifications de paiement de AdjeminPay, vous pouvez passer directement à l'etape 2, par exemple les services de don.
-
-A chaque paiement, AdjeminPay vous notifie via un lien de notification, nous vous conseillons de toujours le traiter côté serveur. Nous allons utiliser PHP dans ce cas de figure :
-Script index.php dans <http://mondomaine.com/notify/> (le script doit se trouver dans le repertoire de votre url notify_url) ;
-
-```php
-<?php
-
-    // EXEMPLE DE NOTIFY --
-?>
-```
+Lors de vos paiements, AdjeminPay vous notifie via une uri que vous avez précédement définie dans votre interface admin lors de la création de votre application. Dans l'éventualité où vous n'avez pas encore passer cette étape je vous conseillerez de créer un application dans votre interface puis suivre la suite.
 
 ## Etape 2 : Formulaire de paiement
 
-Avant de commencer cette etape, il faut lier le seamless SDK à votre page :
+Commencez par lier le seamless SDK à votre page, vous trouverez le js à l'adresse :
 
-* `https://www.adjeminpay.com/release/seamless/latest/adjeminpay.prod.min.js`    : si vous êtes en production
+`https://www.adjeminpay.com/release/seamless/latest/adjeminpay.prod.min.js`
 
-Cela se fait dans la balise head de votre page web
-
-Exemple (en PROD) :
+l'intégration du lien ce fais comme suit :
 
 ```html
-   <head>
-       ...
-       <script charset="utf-8"
-               src="https://www.adjeminpay.com/release/seamless/latest/adjeminpay.prod.min.js"
-               type="text/javascript">
-       </script>
-   </head>
+<script src="https://www.adjeminpay.com/release/seamless/latest/adjeminpay.prod.min.js" type="text/javascript"></script>
 ```
 
-### Formulaire AdjeminPay
+### Information sur la transaction AdjeminPay
 
-Le formulaire de paiement AdjeminPay est constitué de :
+Pour faire une transaction avec AdjeminPay vous devez definir les champs suivant :
 
 * `amount`      : Montant du paiement
-* `currency`    : Devise du paiement, toujours en CFA pour le moment
-* `trans_id`    : L'identifiant de la transaction, elle est unique
-* `designation` : La designation de votre paiement
-* `notify_url`  : le lien de notification silencieuse (IPN) après paiement
+* `currency`    : Devise du paiement, en CFA
+* `trans_id`    : Unique identifiant de la transaction
+* `designation` : Designation du paiement
+* `notify_url`  : uri de notification ou vous recevrez les information après le paiement
 
-Vous pouvez ajouter en option ces deux elements :
+Ces éléments sont facultatifs :
 
-* `phone_num`      : Numéro de téléphone sur lequel l'utilisateur effectuera le paiement
-* `adp_phone_prefixe`    : Code Pays du numéro de téléphone (exemple 225)
+* `phone_num`      : Numéro de téléphone utiliser pour le paiement
+* `adp_phone_prefixe`    : CC ou Country Code du numéro de téléphone utiliser 
+    * exemple : (225 => pour la côte d'ivoire) 
 
 Exemple :
 
 ```html
-<p id="payment_result"></p>
-<form id="info_paiement">
-    <input type="hidden"  id="amount" value="10">
+<p id="result"></p>
+<form id="paiement">
+    <input type="hidden"  id="amount" value="7500">
 
     <input type="hidden" id="currency" value="CFA">
 
@@ -79,88 +53,64 @@ Exemple :
 
     <input type="hidden" id="adp_custom" value="">
 
-    <input type="hidden" id="designation" value="Achat de chaussure noir">
+    <input type="hidden" id="designation" value="Ecouteur vert bluetooth">
 
-    <button type="submit" id="process_payment">Proceder au Paiement</button>
+    <button type="submit" id="requestToPay">Faire un Paiement</button>
 </form>
 ```
 
-NB : _Avant l'affichage de ce formulaire, vous devez enregistrer les informations concernant cette transaction dans votre base de données afin de les verifier après paiement du client_
+NB : _Enregistrer au préalable dans votre base de donnée (BD) les informations concernant une conversation pour pouvoir faire une comparaison plutard_
 
 #### Lier le formulaire au SDK Javascript
 
-Sur clic du bouton "Proceder au Paiement", Nous allons recuperer le montant de la transaction, l'identifiant de la transaction, la devise, la désignation et l'url de notification pour debuter le processus de paiement transparent sur AdjeminPay
-Exemple (fichier payment.js) :
-
-```html
-<script >
+Cliquez sur "Faire un Paiement" pour commencer, nous ferons ensuite en background un enregistrement en prenant les différents champs puis nous vous notifierons sur l'url de notification. Pour avoir un aperçu sur comment cela se faire regarder l'exemple suivant :
+```js
     AdjeminPay.init({
-            apikey: '174323661757617531bf99c9.80613927',
-            application_id: 393509,
-            notify_url: 'http://mondomaine.com/notify/'
+        apikey: 'VOTRE_API_KEY',
+        application_id: 'VOTRE_APPLICATION_ID',
+        notify_url: 'URL_NOTIFICATION'
+    })
+    $('requestToPay').click(function () {
+        AdjeminPay.preparePayment({
+            amount: parseInt($('#amount').val()),
+            trans_id: $('#trans_id').val(),
+            currency: $('#currency').val(),
+            designation: $('#designation').val(),
+            custom: $('#adp_custom').val()
         });
-    var process_payment = document.getElementById('process_payment');
-        process_payment.addEventListener('click', function () {
-            AdjeminPay.preparePayment({
-                amount: parseInt(document.getElementById('amount').value),
-                trans_id: document.getElementById('trans_id').value,
-                currency: document.getElementById('currency').value,
-                designation: document.getElementById('designation').value,
-                custom: document.getElementById('adp_custom').value
-            });
-            AdjeminPay.renderPaymentView();
-        });
-</script>
+        AdjeminPay.renderPaymentView();
+    });
 ```
+NB: _Pour cet exemple nous avons utilisé jquery et le code précédent se fait à l'intérieur d'une balise `<script></script>`_
 
-## Etape 3 : Observer  le paiement transparent
 
-Lorsque le client se trouve sur le guichet de AdjeminPay, Vous pouvez suivre l'etat d'avancement du client sur AdjeminPay grace à ces evènements :
+## Etape 3 : Ecouter les evenements qui se produisent lors de notre Observer
 
-* `error`              : Une erreur s'est produite, les requëtes ajax ou le paiement ont echoué,
-* `paymentPending`     : Le paiement est en cours
-* `paymentSuccessfull` : Le paiement est terminé, Le paiement est valide ou est annulé
+Quand le client se trouve sur l'interface de paiement AdjeminPay, Vous avez la possibilité de suivre l'état d'avancement de celui-ci par le biais des evènements.
+Quelques evenements qui se produisent :
 
-Exemple (suite du fichier payment.js):
+* `error`              : Pour nous signaler des erreurs qui se sont produitent, dont les requëtes ajax ou le paiement à échouer,
+* `paymentPending`     : Pour nous signaler d'un paiement en cours
+* `paymentSuccessfull` : Pour nous signaler d'un paiement est terminé, soit validé ou est annulé
 
-```html
-<script >
-   var result_div = document.getElementById('payment_result');
+Exemple : 
+
+```js
    AdjeminPay.on('error', function (e) {
-        result_div.innerHTML = '';
-        result_div.innerHTML += '<b>Error code:</b>' + e.code + '<br><b>Message:</b>:' + e.message;
+        $('#result').empty()
+        $('#result').html(`<b>Error code:</b>${e.code}<br><b>Message:</b>:${e.message}`)
    });
    AdjeminPay.on('paymentPending', function (e) {
-       result_div.innerHTML = '';
-        result_div.innerHTML = 'Paiement en cours <br>';
-        result_div.innerHTML += '<b>code:</b>' + e.code + '<br><b>Message:</b>:' + e.message;
-   });
+        $('#result').empty()
+        $('#result').html('Paiement en cours <br><b>code:</b>${e.code}<br><b>Message:</b>:${e.message}')
+   })
    AdjeminPay.on('signatureCreated', function () {})
-   AdjeminPay.on('paymentSuccessfull', function (paymentInfo) {
-
-            if(paymentInfo.adp_result == 'SUCCESS'){
-                result_div.innerHTML = 'Votre paiement a été validé avec succès : <br> Montant payé :'+paymentInfo.adp_amount+'<br>';
-            }else{
-                result_div.innerHTML = 'Une erreur est survenue :'+paymentInfo.adp_error_message;
-            }
-   });
-</script>
+   AdjeminPay.on('paymentSuccessfull', function (info) {
+        if(paymentInfo.adp_result == 'SUCCESS'){
+            $('#result').html(`Votre paiement a été validé avec succès : <br> Montant payé : ${info.adp_amount+}<br>`)
+        }else{
+            $('#result').html(`Une erreur est survenue : ${info.adp_error_message}`)
+        }
+   })
 ```
-
-<!-- ## Compatibilité Navigateurs Web
-
-AdjeminPay Seamless Integration a été testé et fonctionne sur tous les navigateurs modernes y compris :
-
-* Chrome
-* Safari
-* Firefox
-* Opera
-* Internet Explorer 8+. -->
-
-<!-- ## Votre Api Key et Site ID -->
-
-<!-- Ces informations sont disponibles dans votre BackOffice AdjeminPay. -->
-
-<!-- ## Exemple Intégration -->
-
-<!-- Vous trouverez un exemple d'intégration complet dans le dossier exemple/html/ -->
+NB: _ce code est la suite du précédent code JS._
