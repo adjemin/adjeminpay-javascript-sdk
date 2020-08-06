@@ -17,12 +17,12 @@ Afin de pouvoir communiqué avec le coté serveur de adjeminPay utilisé un le [
 
 Commencez par lier le seamless SDK JavaScript à votre page, vous trouverez le js à l'adresse :
 
-`https://www.adjeminpay.com/release/seamless/latest/adjeminpay.prod.min.js`
+`https://www.adjeminpay.com/release/seamless/latest/adjeminpay.min.js`
 
 l'intégration du lien ce fais comme suit :
 
 ```html
-<script src="https://www.adjeminpay.com/release/seamless/latest/adjeminpay.prod.min.js" type="text/javascript"></script>
+<script src="https://www.adjeminpay.com/release/seamless/latest/adjeminpay.min.js" type="text/javascript"></script>
 ```
 
 ### Information sur la transaction AdjeminPay
