@@ -2,16 +2,16 @@
 
 ## adjeminpay-javascript-sdk
 
-AdjeminPay Seamless Integration permet d'intégrer les services AdjeminPay rapidement à sa platforme, afin que le client puisse effectuer un paiement sans quitter le site
+AdjeminPay Seamless Integration permet d'intégrer les services AdjeminPay rapidement à votre platforme, afin que le client puisse effectuer un paiement sans quitter le site
 du marchand.
 
 L'intégration de ce SDK se fait en trois étapes :
 
-## Etape 1 : intercepter des notifications de transaction
+## Etape 1 : Intercepter des notifications de chaque transaction au niveau votre serveur
 
 Lors de vos paiements, AdjeminPay vous notifie via une uri que vous avez précédement définie dans votre interface admin lors de la création de votre application. Dans l'éventualité où vous n'avez pas encore passer cette étape je vous conseillerez de créer un application dans votre interface puis suivre la suite.
 
-Afin de pouvoir communiqué avec le coté serveur de adjeminPay utilisé un le [sdk](https://github.com/adjemin/adjeminpay-php-sdk/) dans votre code PHP. Celui-ci vous permettra d'écouter et d'être notifié lors de vos transactions
+Sur votre serveur utilisez le [sdk](https://github.com/adjemin/adjeminpay-php-sdk/) dans votre code PHP. Celui-ci vous permettra d'écouter et d'être notifié lors de vos transactions
 
 ## Etape 2 : Interface/Formulaire de paiement
 
@@ -31,7 +31,7 @@ Pour faire une transaction avec AdjeminPay vous devez definir les champs suivant
 
 * `amount`      : Montant du paiement
 * `currency`    : Devise du paiement, en CFA
-* `trans_id`    : Unique identifiant de la transaction
+* `trans_id`    : Référence de la transaction
 * `designation` : Designation du paiement
 * `notify_url`  : uri de notification ou vous recevrez les information après le paiement
 
