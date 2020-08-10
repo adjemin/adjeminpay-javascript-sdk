@@ -7,7 +7,7 @@ du marchand.
 
 L'intégration de ce SDK se fait en trois étapes :
 
-## Etape 1 : intercepter des notifications de transaction
+## Etape 1 : Intercepter des notifications de transaction
 
 Lors de vos paiements, AdjeminPay vous notifie via une uri que vous avez précédement définie dans votre interface admin lors de la création de votre application. Dans l'éventualité où vous n'avez pas encore passer cette étape je vous conseillerez de créer un application dans votre interface puis suivre la suite.
 
@@ -15,14 +15,15 @@ Afin de pouvoir communiqué avec le coté serveur de adjeminPay utilisé un le [
 
 ## Etape 2 : Interface/Formulaire de paiement
 
-Commencez par lier le seamless SDK JavaScript à votre page, vous trouverez le js à l'adresse :
+Il vous faudra intégrer le lien du SDK javascript et de JQuery
 
-`https://www.adjeminpay.com/release/seamless/latest/adjeminpay.min.js`
-
-l'intégration du lien ce fais comme suit :
+Dans le head de votre page html ajoutez:
 
 ```html
-<script src="https://www.adjeminpay.com/release/seamless/latest/adjeminpay.min.js" type="text/javascript"></script>
+    <script src="https://www.adjeminpay.com/release/seamless/latest/adjeminpay.min.js" type="text/javascript"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+
 ```
 
 ### Information sur la transaction AdjeminPay
@@ -33,13 +34,13 @@ Pour faire une transaction avec AdjeminPay vous devez definir les champs suivant
 * `currency`    : Devise du paiement, en CFA
 * `trans_id`    : Unique identifiant de la transaction
 * `designation` : Designation du paiement
-* `notify_url`  : uri de notification ou vous recevrez les information après le paiement
+* `notify_url`  : uri de notification ou vous recevrez les informations après le paiement
 
 Ces éléments sont facultatifs :
 
 * `phone_num`      : Numéro de téléphone utiliser pour le paiement
-* `adp_phone_prefixe`    : CC ou Country Code du numéro de téléphone utiliser 
-    * exemple : (225 => pour la côte d'ivoire) 
+* `adp_phone_prefixe`    : CC ou Country Code du numéro de téléphone utiliser
+* exemple : (225 => pour la côte d'ivoire)
 
 Exemple :
 
@@ -56,22 +57,39 @@ Exemple :
 
     <input type="hidden" id="designation" value="Ecouteur vert bluetooth">
 
-    <button type="submit" id="requestToPay">Faire un Paiement</button>
+    <button type="submit" id="payButton">Payer avec AdjeminPay</button>
 </form>
 ```
 
-NB : _Enregistrer au préalable dans votre base de donnée (BD) les informations concernant une conversation pour pouvoir faire une comparaison plutard_
+NB : _Veillez à enregistrer au préalable dans votre base de donnée les informations concernant une transaction pour pouvoir faire une comparaison plus tard_
 
 #### Lier le formulaire au SDK Javascript
 
-Cliquez sur "Faire un Paiement" pour commencer, nous ferons ensuite en background un enregistrement en prenant les différents champs puis nous vous notifierons sur l'url de notification. Pour avoir un aperçu sur comment cela se faire regarder l'exemple suivant :
-```js
+Cliquez sur "Payer avec AdjeminPay" pour commencer, nous ferons ensuite en background un enregistrement en prenant les différents champs puis nous vous notifierons sur l'url de notification.
+
+L'exemple suivant vous montre comment initialiser et lancer le paiement :
+
+```html
+<script>
+    var AdjeminPay = AdjeminPay();
+
     AdjeminPay.init({
         apikey: 'VOTRE_API_KEY',
         application_id: 'VOTRE_APPLICATION_ID',
         notify_url: 'URL_NOTIFICATION'
-    })
-    $('requestToPay').click(function () {
+    });
+    // Ecouter le feedback de l'initialisation
+    AdjeminPay.on('init', function(e){
+        // retourne une erreur au cas où votre API_KEY ou APPLICATION_ID est incorrecte
+        console.log(e);
+    });
+    // Ecouter le feedback sur les errerurs
+    AdjeminPay.on('error', function(e){
+            console.log("erreur trouvées");
+            console.log(e);
+        });
+    // Lancer la procédure de paiement
+    $('payButton').click(function () {
         AdjeminPay.preparePayment({
             amount: parseInt($('#amount').val()),
             trans_id: $('#trans_id').val(),
@@ -81,10 +99,8 @@ Cliquez sur "Faire un Paiement" pour commencer, nous ferons ensuite en backgroun
         });
         AdjeminPay.renderPaymentView();
     });
+</script>
 ```
-
-NB: _Pour cet exemple nous avons utilisé jquery et le code précédent se fait à l'intérieur d'une balise `<script></script>`_
-
 
 ## Etape 3 : Ecouter les evenements qui se produisent lors de notre transaction
 
