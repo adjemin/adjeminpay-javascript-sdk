@@ -32,7 +32,7 @@ Pour faire une transaction avec AdjeminPay vous devez definir les champs suivant
 
 * `amount`      : Montant du paiement
 * `currency`    : Devise du paiement, en CFA
-* `trans_id`    : Référence de la transaction
+* `transactionId`    : Référence de la transaction
 * `designation` : Designation du paiement
 * `notify_url`  : uri de notification ou vous recevrez les informations après le paiement
 
@@ -51,7 +51,7 @@ Exemple :
 
     <input type="hidden" id="currency" value="CFA">
 
-    <input type="hidden" id="trans_id" value="">
+    <input type="hidden" id="transactionId" value="">
 
     <input type="hidden" id="adp_custom" value="">
 
