@@ -92,7 +92,7 @@ L'exemple suivant vous montre comment initialiser et lancer le paiement :
     $('payButton').click(function () {
         AdjeminPay.preparePayment({
             amount: parseInt($('#amount').val()),
-            trans_id: $('#trans_id').val(),
+            transactionId: $('#transactionId').val(),
             currency: $('#currency').val(),
             designation: $('#designation').val(),
             custom: $('#adp_custom').val()
