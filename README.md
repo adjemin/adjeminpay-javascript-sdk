@@ -32,7 +32,7 @@ Pour faire une transaction avec AdjeminPay vous devez definir les champs suivant
 
 * `amount`      : Montant du paiement
 * `currency`    : Devise du paiement, en CFA
-* `transactionId`    : Référence de la transaction
+* `transaction_id` : Référence de la transaction
 * `designation` : Designation du paiement
 * `notify_url`  : uri de notification ou vous recevrez les informations après le paiement
 
@@ -51,11 +51,11 @@ Exemple :
 
     <input type="hidden" id="currency" value="CFA">
 
-    <input type="hidden" id="transactionId" value="">
+    <input type="hidden" id="transaction_id" value="">
 
-    <input type="hidden" id="adp_custom" value="">
+    <input type="hidden" id="custom_field" value="">
 
-    <input type="hidden" id="designation" value="Ecouteur vert bluetooth">
+    <input type="hidden" id="designation" value="Tee-shirt Arafat personnalisé">
 
     <button type="submit" id="payButton">Payer avec AdjeminPay</button>
 </form>
@@ -76,7 +76,7 @@ L'exemple suivant vous montre comment initialiser et lancer le paiement :
     AdjeminPay.init({
         apikey: 'VOTRE_API_KEY',
         application_id: 'VOTRE_APPLICATION_ID',
-        notify_url: 'URL_NOTIFICATION'
+        notify_url: 'VOTRE_URL_DE_NOTIFICATION'
     });
     // Ecouter le feedback de l'initialisation
     AdjeminPay.on('init', function(e){
@@ -85,17 +85,16 @@ L'exemple suivant vous montre comment initialiser et lancer le paiement :
     });
     // Ecouter le feedback sur les errerurs
     AdjeminPay.on('error', function(e){
-            console.log("erreur trouvées");
-            console.log(e);
-        });
+        console.log(e);
+    });
     // Lancer la procédure de paiement
     $('payButton').click(function () {
         AdjeminPay.preparePayment({
             amount: parseInt($('#amount').val()),
-            transactionId: $('#transactionId').val(),
+            transaction_id: $('#transaction_id').val(),
             currency: $('#currency').val(),
             designation: $('#designation').val(),
-            custom: $('#adp_custom').val()
+            custom: $('#custom').val()
         });
         AdjeminPay.renderPaymentView();
     });
@@ -122,7 +121,7 @@ Exemple :
         $('#result').empty()
         $('#result').html('Paiement en cours <br><b>code:</b>${e.code}<br><b>Message:</b>:${e.message}')
    })
-   AdjeminPay.on('signatureCreated', function () {})
+   
    AdjeminPay.on('paymentSuccessfull', function (info) {
         if(paymentInfo.adp_result == 'SUCCESS'){
             $('#result').html(`Votre paiement a été validé avec succès : <br> Montant payé : ${info.adp_amount+}<br>`)
