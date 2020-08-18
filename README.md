@@ -57,7 +57,7 @@ Exemple :
 
     <input type="hidden" id="designation" value="Tee-shirt Arafat personnalisé">
 
-    <button type="submit" id="payButton">Payer avec AdjeminPay</button>
+    <button type="submit" id="payButton">Payer</button>
 </form>
 ```
 
@@ -65,7 +65,7 @@ NB : _Veillez à enregistrer au préalable dans votre base de donnée les inform
 
 #### Lier le formulaire au SDK Javascript
 
-Cliquez sur "Payer avec AdjeminPay" pour commencer, nous ferons ensuite en background un enregistrement en prenant les différents champs puis nous vous notifierons sur l'url de notification.
+Cliquez sur "Payer" pour commencer, nous ferons ensuite en background un enregistrement en prenant les différents champs puis nous vous notifierons sur l'url de notification.
 
 L'exemple suivant vous montre comment initialiser et lancer le paiement :
 
