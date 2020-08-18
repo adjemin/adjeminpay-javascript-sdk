@@ -1,4 +1,4 @@
-# [AdjeminPay](https://www.adjeminpay.com) Seamless Integration
+# [AdjeminPay](https://www.adjeminpay.net) Seamless Integration
 
 ## adjeminpay-javascript-sdk
 
@@ -20,7 +20,7 @@ Il vous faudra intégrer le lien du SDK javascript et de JQuery
 Dans le head de votre page html ajoutez:
 
 ```html
-    <script src="https://www.adjeminpay.com/release/seamless/latest/adjeminpay.min.js" type="text/javascript"></script>
+    <script src="https://www.adjeminpay.net/release/seamless/latest/adjeminpay.min.js" type="text/javascript"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
 
