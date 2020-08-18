@@ -88,7 +88,7 @@ L'exemple suivant vous montre comment initialiser et lancer le paiement :
         console.log(e);
     });
     // Lancer la procédure de paiement
-    $('payButton').click(function () {
+    $('#payButton').click(function () {
         AdjeminPay.preparePayment({
             amount: parseInt($('#amount').val()),
             transaction_id: $('#transaction_id').val(),
