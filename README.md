@@ -1,6 +1,6 @@
 # [AdjeminPay](https://www.adjeminpay.net) Seamless Integration
 
-## adjeminpay-javascript-sdk
+## AdjeminPay-javascript-sdk
 
 AdjeminPay Seamless Integration permet d'intégrer les services AdjeminPay rapidement à votre platforme, afin que le client puisse effectuer un paiement sans quitter le site
 du marchand.
