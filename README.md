@@ -2,26 +2,25 @@
 
 ## adjeminpay-javascript-sdk
 
-AdjeminPay Seamless Integration permet d'intégrer les services AdjeminPay rapidement à votre platforme, afin que le client puisse effectuer un paiement sans quitter le site
-du marchand.
+Le seamless javascript vous permet d'intégrer le paiement en ligne via mobile money dans votre site
 
 L'intégration de ce SDK se fait en trois étapes :
 
-## Etape 1 : Intercepter les notifications des transactions au niveau votre serveur
+## Etape 1 : Avoir un compte et une application sur AdjeminPay
 
-Lors de vos paiements, AdjeminPay vous notifie via une uri que vous avez précédement définie dans votre interface admin lors de la création de votre application. Dans l'éventualité où vous n'avez pas encore passer cette étape je vous conseillerez de créer un application dans votre interface puis suivre la suite.
+Avant d'intégrer le seamless vous devez d'abord vous [inscrire et créer une application sur AdjeminPay](https://merchant.adjeminpay.net/customer/register/).
 
-Sur votre serveur utilisez [notre sdk php](https://github.com/adjemin/adjeminpay-php-sdk/) dans votre code PHP. Celui-ci vous permettra d'écouter et d'être notifié lors de vos transactions
+## Etape 2 : Page de paiement
 
-## Etape 2 : Interface/Formulaire de paiement
+La page de paiement est la page où vous envoyez les clients de votre site pour finaliser leur commande
+A cette étape vous devez avoir déjà généré une reference pour la transaction
 
-Il vous faudra intégrer le lien du SDK javascript et de JQuery
 
-Dans le head de votre page html ajoutez:
+Ajouter le lien du sdk et de jquery:
 
 ```html
-    <script src="https://www.api.adjeminpay.net/release/seamless/latest/adjeminpay.min.js" type="text/javascript"></script>
 
+    <script src="https://cdn.adjeminpay.net/release/seamless/latest/adjeminpay.min.js" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
 
 ```
@@ -31,41 +30,42 @@ Dans le head de votre page html ajoutez:
 Pour faire une transaction avec AdjeminPay vous devez definir les champs suivant :
 
 * `amount`      : Montant du paiement
-* `currency`    : Devise du paiement, en CFA
+* `currency`    : Devise du paiement
 * `transaction_id` : Référence de la transaction
 * `designation` : Designation du paiement
 * `notify_url`  : uri de notification ou vous recevrez les informations après le paiement
 
-Ces éléments sont facultatifs :
-
-* `phone_num`      : Numéro de téléphone utiliser pour le paiement
-* `adp_phone_prefixe`    : CC ou Country Code du numéro de téléphone utiliser
-* exemple : (225 => pour la côte d'ivoire)
-
 Exemple :
 
 ```html
-<p id="result"></p>
-<form id="paiement">
-    <input type="hidden"  id="amount" value="7500">
 
+    <div id="result">
+        <h1 id="result-title"></h1>
+        <p id="result-message"></p>
+        <p id="result-status"></p>
+    </div>
+
+    <input type="hidden" id="amount" value="100">
     <input type="hidden" id="currency" value="CFA">
 
-    <input type="hidden" id="transaction_id" value="">
-
-    <input type="hidden" id="custom_field" value="">
+    <!-- NB: La longeur maximum d'un id de transaction est de 191 caractères -->
+    <input type="hidden" id="transaction_id"
+        value="d3aa42a9-1-1-c48*-4df2-a2f0-2921780ab71d-d3aa42a9-4df26-a2f0-2921780ab71d9">
+    <!-- Champ personnalisé où vous pourrez définir des informations supplémentaires à votre transaction  -->
+    <!-- le champ custom est facultatif -->
+    <input type="hidden" id="custom_field" value="custom text">
 
     <input type="hidden" id="designation" value="Tee-shirt Arafat personnalisé">
 
-    <button type="submit" id="payButton">Payer</button>
-</form>
+    <button id="payBtn">Payer</button>
+
 ```
 
-NB : _Veillez à enregistrer au préalable dans votre base de donnée les informations concernant une transaction pour pouvoir faire une comparaison plus tard_
+NB : _Veuillez générer votre transaction id dynamiquement en enregistrer votre transaction dans votre base de donnée_
 
 #### Lier le formulaire au SDK Javascript
 
-Cliquez sur "Payer" pour commencer, nous ferons ensuite en background un enregistrement en prenant les différents champs puis nous vous notifierons sur l'url de notification.
+Cliquez sur "Payer" pour commencer, le paiement sera préparé par AdjeminPay et la page de paiement sera générée et affichée.
 
 L'exemple suivant vous montre comment initialiser et lancer le paiement :
 
@@ -73,62 +73,124 @@ L'exemple suivant vous montre comment initialiser et lancer le paiement :
 <script>
     var AdjeminPay = AdjeminPay();
 
+    AdjeminPay.on('init', function (e) {
+        // retourne une erreur au cas où votre API_KEY ou APPLICATION_ID est incorrecte
+        console.log(e);
+    });
+
+    // Lance une requete ajax pour vérifier votre API_KEY et APPLICATION_ID et initie le paiement
     AdjeminPay.init({
         apikey: 'VOTRE_API_KEY',
         application_id: 'VOTRE_APPLICATION_ID',
         notify_url: 'VOTRE_URL_DE_NOTIFICATION'
     });
-    // Ecouter le feedback de l'initialisation
-    AdjeminPay.on('init', function(e){
-        // retourne une erreur au cas où votre API_KEY ou APPLICATION_ID est incorrecte
+
+    // Ecoute le feedback sur les erreurs
+    AdjeminPay.on('error', function (e) {
+        // la fonction que vous définirez ici sera exécutée en cas d'erreur
         console.log(e);
+        $("#result-title").html(e.title);
+        $("#result-message").html(e.message);
+        $("#result-status").html(e.status);
     });
-    // Ecouter le feedback sur les errerurs
-    AdjeminPay.on('error', function(e){
-        console.log(e);
-    });
-    // Lancer la procédure de paiement
-    $('#payButton').click(function () {
+
+    // Lancer la procédure de paiement au click
+    $('#payBtn').on('click', function () {
+
+        // Vérifie vos informations et prépare le paiement
+        // S'il y a une erreur à cette étape, AdjeminPay.on('error') sera exécuté
+
         AdjeminPay.preparePayment({
             amount: parseInt($('#amount').val()),
             transaction_id: $('#transaction_id').val(),
             currency: $('#currency').val(),
             designation: $('#designation').val(),
-            custom: $('#custom').val()
+            custom: $('#custom_field').val()
         });
+
+        // Si l'étape précédante n'a pas d'erreur,
+        // cette ligne génère et affiche l'interface de paiement AdjeminPay
         AdjeminPay.renderPaymentView();
     });
 </script>
 ```
 
-## Etape 3 : Ecouter les evenements qui se produisent lors de notre transaction
+## Etape 3 : Réagir aux évènements et exécuter des callbacks lors de l'exécution de votre transaction
 
-Quand le client se trouve sur l'interface de paiement AdjeminPay, Vous avez la possibilité de suivre l'état d'avancement de celui-ci par le biais des evènements.
-Quelques evenements qui se produisent :
+Lorsque la page de paiement est générée, AdjeminPay vous permet de suivre toutes les étapes du paiement via des évènements.
+Ces évènements retournent des données sous forme d'objet que vous pouvez utiliser dans vos callbacks
 
-* `error`              : Pour nous signaler des erreurs qui se sont produitent, dont les requëtes ajax ou le paiement à échouer,
-* `paymentPending`     : Pour nous signaler d'un paiement en cours
-* `paymentSuccessfull` : Pour nous signaler d'un paiement est terminé, soit validé ou est annulé
+* `error` : Une ou plusieurs erreurs se sont produites :
+      - soit dans la vérification de vos données de paiement, notamment transaction_id, api_key et application_id
+      - soit dans les requetes sur notre serveur
+        Un message d'erreur s'affiche et le paiement est stoppé
+
+```js
+    AdjeminPay.on('error', function(errorData)){
+        console.log(errorData.error);
+        console.log(errorData.message);
+    }
+```
+
+Les évènements suivants retournent un objet qui contient les informations de la transaction (title, status, message)
+
+* `paymentPending`    : Le paiement est en attente (le client a ouvert l'interface de paiement)
+* `paymentTerminated` : Le paiement est terminé, le status est soit validé ou échoué ou annulé
+* `paymentSuccessful` : Le paiement est réussi, le client a payé et l'interface de paiement s'est fermée
+* `paymentFailed` : Le paiement a échoué :
+      - soit le solde du client n'est pas suffisant
+      - soit le code otp n'est pas correct
+      - soit le client n'a pas confirmé le paiement
+      - soit une erreur au niveau de l'opérateur s'est produite
+        NB : _ces détails sont disponiblent dans le callback des evenements_
+* `paymentCancelled` : Le paiement a été annulé : le client a cliqué sur le bouton 'Annuler'
 
 Exemple :
 
 ```js
-   AdjeminPay.on('error', function (e) {
-        $('#result').empty()
-        $('#result').html(`<b>Error code:</b>${e.code}<br><b>Message:</b>:${e.message}`)
-   });
-   AdjeminPay.on('paymentPending', function (e) {
-        $('#result').empty()
-        $('#result').html('Paiement en cours <br><b>code:</b>${e.code}<br><b>Message:</b>:${e.message}')
-   })
-   
-   AdjeminPay.on('paymentSuccessfull', function (info) {
-        if(paymentInfo.adp_result == 'SUCCESS'){
-            $('#result').html(`Votre paiement a été validé avec succès : <br> Montant payé : ${info.adp_amount+}<br>`)
-        }else{
-            $('#result').html(`Une erreur est survenue : ${info.adp_error_message}`)
-        }
-   })
-```
+    // Payment en attente
+    AdjeminPay.on('paymentPending', function (e) {
+        console.log('<<<<<<< pending !');
+        console.log('>>>>>>> Paiement en attente !');
+        console.log(e.title);
+        console.log(e.status);
+        console.log(e.message);
+        // ATTENDRE
+    });
+    // Payment terminé
+    AdjeminPay.on('paymentTerminated', function (e) {
+        console.log('<<<<<<< terminated !');
+        console.log('>>>>>>> Paiement terminé !');
+        console.log(e.title);
+        console.log(e.status);
+        console.log(e.message);
+        // EXECUTER UN CALLBACK
+    });
+    // Payment réussi
+    AdjeminPay.on('paymentSuccessful', function (e) {
+        console.log('<<<<<<< Successful !');
+        console.log('>>>>>>> Paiement réussi !');
+        console.log(e.title);
+        console.log(e.status);
+        console.log(e.message);
+        // ACTION redirection, popup de félicitation etc
+    });
+    // Payment échoué
+    AdjeminPay.on('paymentFailed', function (e) {
+        console.log('<<<<<<< Echec !');
+        console.log('>>>>>>> Paiement echoué !');
+                console.log(e.message)
+        // ACTION redirection etc
+    });
 
-NB: _ce code est la suite du précédent code JS._
+    // Payment annulé
+    AdjeminPay.on('paymentCancelled', function (e) {
+
+        console.log('<<<<<<< Echec !');
+        console.log('>>>>>>> Paiement annulé !');
+        console.log(e.title);
+        console.log(e.status);
+        console.log(e.message);
+        // ACTION
+    });
+```
