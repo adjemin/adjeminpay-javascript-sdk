@@ -15,7 +15,6 @@ Avant d'intégrer le seamless vous devez d'abord vous [inscrire et créer une ap
 La page de paiement est la page où vous envoyez les clients de votre site pour finaliser leur commande
 A cette étape vous devez avoir déjà généré une reference pour la transaction
 
-
 Ajouter le lien du sdk et de jquery:
 
 ```html
