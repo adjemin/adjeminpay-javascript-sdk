@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payer Via AdjeminPay</title>
+</head>
+
+<body>
+    <script src="https://www.cdn.adjeminpay.net/release/seamless/latest/adjeminpay.min.js" type="text/javascript">
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+
+
+    <input type="hidden" id="amount" value="">
+    <input type="hidden" id="currency" value="CFA">
+    <input type="hidden" id="custom" value="">
+    <input type="hidden" id="designation" value="">
+
+    <button id="payBtn">Payer</button>
+
+    <script>
+        var AdjeminPay = AdjeminPay();
+
+        AdjeminPay.on('init', function (e) {
+            console.log(e);
+        });
+
+        AdjeminPay.init({
+            apikey: "",
+            application_id: "",
+            notify_url: ""
+        });
+        
+        AdjeminPay.on('error', function (e) {
+            console.log(e);
+        });
+
+        // Lancer la procédure de paiement au click
+        $('#payBtn').on('click', function () {
+
+            AdjeminPay.preparePayment({
+                amount: parseInt($('#amount').val()),
+                transaction_id: $('#transaction_id').val(),
+                currency: $('#currency').val(),
+                designation: $('#designation').val(),
+                custom: $('#custom_field').val()
+            });
+            AdjeminPay.renderPaymentView();
+        });
+
+        // Payment terminé
+        AdjeminPay.on('paymentTerminated', function (e) {
+            console.log('<<<<<<< Terminated !');
+            console.log(e);
+        });
+        // Payment réussi
+        AdjeminPay.on('paymentSuccessful', function (e) {
+            console.log('<<<<<<< Successful !');
+            console.log(e);
+        });
+        // Payment échoué
+        AdjeminPay.on('paymentFailed', function (e) {
+            console.log('<<<<<<< Failed !');
+            console.log(e);
+        });
+        // Payment annulé
+        AdjeminPay.on('paymentCancelled', function (e) {
+            console.log('<<<<<<< Cancelled !');
+            console.log(e);
+        });
+    </script>
+
+</body>
+
+</html>

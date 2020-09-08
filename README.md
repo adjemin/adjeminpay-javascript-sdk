@@ -1,6 +1,6 @@
 # [AdjeminPay](https://www.adjeminpay.net) Seamless Integration
 
-## adjeminpay-javascript-sdk
+## AdjeminPay-javascript-sdk
 
 Le seamless javascript vous permet d'intégrer le paiement en ligne via mobile money dans votre site
 
@@ -193,3 +193,7 @@ Exemple :
         // ACTION
     });
 ```
+
+Un exemple complet se trouve dans /exemple/index.html
+
+Une page prete à l'emploi se trouve dans /exemple/adjeminpay.html
