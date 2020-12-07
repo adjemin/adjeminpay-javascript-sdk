@@ -1,3 +1,5 @@
+<!-- // Fichier ressources/views/adjeminpay/payement.blade.php -->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,17 +21,17 @@
         <p id="result-status"></p>
     </div>
 
-    <input type="hidden" id="amount" value="2000000">
+    <input type="text" id="amount" value="{{$transaction->amount}}">
 
-    <input type="hidden" id="currency" value="CFA">
+    <input type="text" id="currency" value="CFA">
 
     <!-- La longeur maximum d'un id de transaction est de 191 caractères -->
-    <input type="hidden" id="transaction_id"
-        value="d3aa42a9-1-1-c48*-4df2-a2f0-2921780ab71d-d3aa42a9-4df26-a2f0-2921780ab71d9">
+    <input type="text" id="transaction_id"
+        value="{{$transaction->reference}}">
 
-    <input type="hidden" id="custom" value="custom">
+    <input type="text" id="custom" value="{{$custom}}">
 
-    <input type="hidden" id="designation" value="Tee-shirt Arafat personnalisé">
+    <input type="text" id="designation" value="{{$transaction->designation}}">
 
     <button id="payBtn">Payer</button>
 
@@ -44,8 +46,8 @@
 
         // Lance une requete ajax pour vérifier votre API_KEY et APPLICATION_ID
         AdjeminPay.init({
-            apikey: "eyJpdiI6IkpNQ05tWmtGc0FVbWc1VFhFM",
-            application_id: "f9d37e",
+            apikey: "{{$apikey}}",
+            application_id: "{{$application_id}}",
         });
 
         // Ecoute le feedback sur les erreurs
@@ -62,7 +64,7 @@
 
             // Vérifie vos informations et prépare le paiement
             // S'il y a une erreur à cette étape, AdjeminPay.on('error')
-            // sera exécutée 
+            // sera exécutée
 
             AdjeminPay.preparePayment({
                 amount: parseInt($('#amount').val()),
@@ -70,7 +72,8 @@
                 currency: $('#currency').val(),
                 designation: $('#designation').val(),
                 custom: $('#custom').val(),
-                notify_url: 'https://adjemin.com/notify'
+                notify_url: "{{route('api.transaction.notify')}}"
+
             });
 
             // Si l'étape précédante n'a pas d'erreur,
@@ -86,6 +89,7 @@
             $("#result-title").html(e.title);
             $("#result-message").html(e.message);
             $("#result-status").html(e.status);
+            // Action
         });
         // Payment réussi
         AdjeminPay.on('paymentSuccessful', function (e) {

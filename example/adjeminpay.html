@@ -31,7 +31,6 @@
         AdjeminPay.init({
             apikey: "",
             application_id: "",
-            notify_url: ""
         });
         
         AdjeminPay.on('error', function (e) {
@@ -46,7 +45,9 @@
                 transaction_id: $('#transaction_id').val(),
                 currency: $('#currency').val(),
                 designation: $('#designation').val(),
-                custom: $('#custom_field').val()
+                custom: $('#custom_field').val(),
+                notify_url: ""
+
             });
             AdjeminPay.renderPaymentView();
         });

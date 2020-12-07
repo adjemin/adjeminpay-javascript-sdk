@@ -24,7 +24,7 @@ Ajouter le lien du sdk et de jquery:
 
 ```
 
-### Information sur la transaction AdjeminPay
+### Etape 2.1 : Informations sur votre transaction
 
 Pour faire une transaction avec AdjeminPay vous devez definir les champs suivant :
 
@@ -62,7 +62,7 @@ Exemple :
 
 NB : _Veuillez générer votre transaction id dynamiquement en enregistrer votre transaction dans votre base de donnée_
 
-#### Lier le formulaire au SDK Javascript
+#### Etape 2.2 : Lier le formulaire au SDK Javascript
 
 Cliquez sur "Payer" pour commencer, le paiement sera préparé par AdjeminPay et la page de paiement sera générée et affichée.
 
@@ -81,7 +81,6 @@ L'exemple suivant vous montre comment initialiser et lancer le paiement :
     AdjeminPay.init({
         apikey: 'VOTRE_API_KEY',
         application_id: 'VOTRE_APPLICATION_ID',
-        notify_url: 'VOTRE_URL_DE_NOTIFICATION'
     });
 
     // Ecoute le feedback sur les erreurs
@@ -104,7 +103,10 @@ L'exemple suivant vous montre comment initialiser et lancer le paiement :
             transaction_id: $('#transaction_id').val(),
             currency: $('#currency').val(),
             designation: $('#designation').val(),
-            custom: $('#custom_field').val()
+            custom: $('#custom_field').val(),
+            notify_url: 'VOTRE_URL_DE_NOTIFICATION'
+            // le notify_url est TRES IMPORTANT
+            // c'est lui qui permettra de notifier votre backend
         });
 
         // Si l'étape précédante n'a pas d'erreur,
@@ -192,7 +194,19 @@ Exemple :
         console.log(e.message);
         // ACTION
     });
+    
 ```
+
+## Etape 4 : Capter la notification de paiement dans votre backend
+
+Vous souvenez-vous de ```notify_url: 'VOTRE_URL_DE_NOTIFICATION'``` ?
+Vous devez maintenant l'implémenter dans votre backend pour être notifié de l'évolution du paiement et mettre à jour votre base de données
+
+AdjeminPay envoie une requête POST à VOTRE_URL_DE_NOTIFICATION avec les données suivantes : (transaction_id, status, data)
+
+* `transaction_id`    : L'id de transaction que vous avez défini à l'étape 2.1
+* `status` : Le status du paiement
+* `data` : La transaction AdjeminPay complete, avec tous les détails
 
 Un exemple complet se trouve dans /exemple/index.html
 
