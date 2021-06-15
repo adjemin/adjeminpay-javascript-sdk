@@ -19,19 +19,14 @@
         <p id="result-status"></p>
     </div>
 
-    <input type="hidden" id="amount" value="2000000">
-
-    <input type="hidden" id="currency" value="CFA">
-
-    <!-- La longeur maximum d'un id de transaction est de 191 caractères -->
-    <input type="hidden" id="transaction_id"
-        value="d3aa42a9-1-1-c48*-4df2-a2f0-2921780ab71d-d3aa42a9-4df26-a2f0-2921780ab71d9">
-
-    <input type="hidden" id="custom" value="custom">
-
-    <input type="hidden" id="designation" value="Tee-shirt Arafat personnalisé">
-
-    <button id="payBtn">Payer</button>
+    <form id="paiement">
+        <input type="hidden"  id="amount" value="25000">
+        <input type="hidden" id="currency" value="CFA">
+        <input type="hidden"  id="adp_signature" >
+        <input type="hidden" id="transaction_id" value="nkHgzAivULfVzvvEkbMsEI7ZjOlRxl9G">
+        <input type="hidden" id="designation" value="Paire de basket Air Force">
+        <button type="submit" id="payBtn">Payer avec AdjeminPay</button>
+    </form>
 
     <script>
         var AdjeminPay = AdjeminPay();
@@ -44,8 +39,11 @@
 
         // Lance une requete ajax pour vérifier votre API_KEY et APPLICATION_ID
         AdjeminPay.init({
-            apikey: "eyJpdiI6IkpNQ05tWmtGc0FVbWc1VFhFM",
-            application_id: "f9d37e",
+            client_id : 'VOTRE_CLIENT_ID',
+            client_secret : "VOTRE_CLIENT_SECRET",
+            transaction_id : $('#transaction_id').val(),
+            designation :  $('#designation').val(),
+            amount :  parseInt($('#amount').val()),
         });
 
         // Ecoute le feedback sur les erreurs
@@ -69,8 +67,11 @@
                 transaction_id: $('#transaction_id').val(),
                 currency: $('#currency').val(),
                 designation: $('#designation').val(),
-                custom: $('#custom').val(),
-                notify_url: 'https://adjemin.com/notify'
+                custom: $('#custom_field').val(),
+                notify_url: 'https://webhook.site/427ed2b8-db3e-4ac6-be64-9ecb5b68e420',
+                signature : $('#adp_signature').val(),
+                return_url :'https://application.example.com/return',
+                cancel_url : 'https://application.example.com/cancel'
             });
 
             // Si l'étape précédante n'a pas d'erreur,
