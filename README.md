@@ -19,7 +19,7 @@ Ajouter le lien du sdk et de jquery:
 
 ```html
 
-    <script src="https://cdn.adjeminpay.net/release/seamless/latest/adjeminpay.min.js" type="text/javascript"></script>
+    <script src="https://api.adjeminpay.net/release/seamless/latest/adjeminpay.min.js" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
 
 ```
@@ -38,29 +38,23 @@ Exemple :
 
 ```html
 
-    <div id="result">
-        <h1 id="result-title"></h1>
-        <p id="result-message"></p>
-        <p id="result-status"></p>
-    </div>
-
-    <input type="hidden" id="amount" value="100">
+<div id="result">
+    <h1 id="result-title"></h1>
+    <p id="result-message"></p>
+    <p id="result-status"></p>
+</div>
+<form id="paiement">
+    <input type="hidden"  id="amount" value="25000">
     <input type="hidden" id="currency" value="CFA">
-
-    <!-- NB: La longeur maximum d'un id de transaction est de 191 caractères -->
-    <input type="hidden" id="transaction_id"
-        value="d3aa42a9-1-1-c48*-4df2-a2f0-2921780ab71d-d3aa42a9-4df26-a2f0-2921780ab71d9">
-    <!-- Champ personnalisé où vous pourrez définir des informations supplémentaires à votre transaction  -->
-    <!-- le champ custom est facultatif -->
-    <input type="hidden" id="custom_field" value="custom text">
-
-    <input type="hidden" id="designation" value="Tee-shirt Arafat personnalisé">
-
-    <button id="payBtn">Payer</button>
+    <input type="hidden"  id="adp_signature" >
+    <input type="hidden" id="transaction_id" value="nkHgzAivULfVzvvEkbMsEI7ZjOlRxl9G">
+    <input type="hidden" id="designation" value="Paire de basket Air Force">
+    <button type="submit" id="payBtn">Payer avec AdjeminPay</button>
+</form>
 
 ```
 
-NB : _Veuillez générer votre transaction id dynamiquement en enregistrer votre transaction dans votre base de donnée_
+NB : _Veuillez générer votre transaction_id dynamiquement et enregistré votre transaction dans votre base de donnée_
 
 #### Etape 2.2 : Lier le formulaire au SDK Javascript
 
@@ -73,14 +67,18 @@ L'exemple suivant vous montre comment initialiser et lancer le paiement :
     var AdjeminPay = AdjeminPay();
 
     AdjeminPay.on('init', function (e) {
-        // retourne une erreur au cas où votre API_KEY ou APPLICATION_ID est incorrecte
-        console.log(e);
+        // retourne une erreur au cas où votre CLIENT_ID ou CLIENT_SECRET est incorrecte
+        signature = e;
+        $("#adp_signature").val(signature);
     });
 
     // Lance une requete ajax pour vérifier votre API_KEY et APPLICATION_ID et initie le paiement
     AdjeminPay.init({
-        apikey: 'VOTRE_API_KEY',
-        application_id: 'VOTRE_APPLICATION_ID',
+        client_id : 'VOTRE_CLIENT_ID',
+        client_secret : "VOTRE_CLIENT_SECRET",
+        transaction_id : $('#transaction_id').val(),
+        designation :  $('#designation').val(),
+        amount :  parseInt($('#amount').val()),
     });
 
     // Ecoute le feedback sur les erreurs
@@ -104,7 +102,10 @@ L'exemple suivant vous montre comment initialiser et lancer le paiement :
             currency: $('#currency').val(),
             designation: $('#designation').val(),
             custom: $('#custom_field').val(),
-            notify_url: 'VOTRE_URL_DE_NOTIFICATION'
+            notify_url: 'https://webhook.site/427ed2b8-db3e-4ac6-be64-9ecb5b68e420',
+            signature : $('#adp_signature').val(),
+            return_url :'https://application.example.com/return',
+            cancel_url : 'https://application.example.com/cancel'
             // le notify_url est TRES IMPORTANT
             // c'est lui qui permettra de notifier votre backend
         });
@@ -122,7 +123,7 @@ Lorsque la page de paiement est générée, AdjeminPay vous permet de suivre tou
 Ces évènements retournent des données sous forme d'objet que vous pouvez utiliser dans vos callbacks
 
 * `error` : Une ou plusieurs erreurs se sont produites :
-      - soit dans la vérification de vos données de paiement, notamment transaction_id, api_key et application_id
+      - soit dans la vérification de vos données de paiement, notamment transaction_id, client_id et client_secret
       - soit dans les requetes sur notre serveur
         Un message d'erreur s'affiche et le paiement est stoppé
 
