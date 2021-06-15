@@ -8,9 +8,7 @@
 </head>
 
 <body>
-    <script src="https://www.cdn.adjeminpay.net/release/seamless/latest/adjeminpay.min.js" type="text/javascript">
-    </script>
-
+    <script src="https://api.adjeminpay.net/release/seamless/latest/adjeminpay.min.js" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
 
     <div id="result">
@@ -23,7 +21,8 @@
         <input type="hidden"  id="amount" value="25000">
         <input type="hidden" id="currency" value="CFA">
         <input type="hidden"  id="adp_signature" >
-        <input type="hidden" id="transaction_id" value="nkHgzAivULfVzvvEkbMsEI7ZjOlRxl9G">
+        <!-- Vous pouvez générer un UUID ici https://www.uuidgenerator.net/ !-->
+        <input type="hidden" id="transaction_id" value="c4a4f911-6eeb-4c9f-af18-60fcf5111a23">
         <input type="hidden" id="designation" value="Paire de basket Air Force">
         <button type="submit" id="payBtn">Payer avec AdjeminPay</button>
     </form>
